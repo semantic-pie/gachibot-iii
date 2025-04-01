@@ -1,0 +1,13 @@
+{
+    "imports": {
+        "@std/fs": "jsr:@std/fs@^1.0.5",
+        "@grammy": "https://deno.land/x/grammy@v1.35.1/mod.ts",
+        "@openai": "https://deno.land/x/openai@v4.69.0/mod.ts",
+        "@src/": "./src/"
+    },
+    "unstable": ["kv"],
+    "tasks": {
+        "prod": "deno run -A ./main.ts",
+        "dev": "deno run -A --watch ./main.ts"
+    }
+}
