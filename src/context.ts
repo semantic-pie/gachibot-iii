@@ -8,7 +8,7 @@ export interface KvUser {
 interface BotConfig {
   isAdmin: boolean;
   user?: KvUser;
-  shouldBreakIn: boolean;
+  shouldBreakIn: number;
 }
 
 export type BotContext = Context & {
