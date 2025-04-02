@@ -2,6 +2,7 @@ import { Context } from "@grammy";
 
 export interface KvUser {
   history: string[];
+  userName: string;
   profile: string | undefined;
 }
 

@@ -13,15 +13,24 @@ export const updateProfile = async (
   if (ctx.msg?.from?.id) {
     const userKey = getUserKey(ctx.msg.from.id);
     const userWrapper = await db.get<KvUser>(userKey);
+    const userName =
+      ctx.msg.from.first_name +
+      " " +
+      (ctx.msg.from.last_name ? ctx.msg?.from.last_name : "");
     if (!userWrapper.value) {
-      user = { history: [ctx.msg.text!], profile: undefined };
+      user = {
+        history: [ctx.msg.text!],
+        profile: undefined,
+        userName: userName,
+      } as KvUser;
       await db.set(userKey, user);
     } else {
-      if (userWrapper.value.history.length > 30) {
+      if (userWrapper.value.history.length > 10) {
         user = {
           history: [ctx.msg.text],
           profile: await createProfile(
             userWrapper.value.history,
+            userWrapper.value.userName,
             userWrapper.value.profile
           ),
         } as KvUser;
@@ -38,16 +47,35 @@ export const updateProfile = async (
   return user;
 };
 
-const createProfile = async (history: string[], profile?: string) => {
+const createProfile = async (
+  history: string[],
+  userName: string,
+  profile?: string
+) => {
   const completion = await ai.chat.completions.create({
     model: "deepseek-chat",
     messages: [
       {
         role: "system",
         content:
-          "Сделай краткую выжимку или характиристику пользователя по его последним сообщениям. Пострарайся кратко, так чтобы потом можно было на это ссылаться.",
+          `Сделай краткую выжимку или характиристику пользователя по его последним сообщениям.
+          Пострарайся кратко, так чтобы потом можно было на это ссылаться.
+          Тебе на вход подается json структура пользователя, состоящая из нескольких полей:
+          {
+            "userName": "Имя пользователя",
+            "history": ["Сообщения пользователя"],
+            "prev_profile": "Предыдущая выжимка"
+          }
+          `,
       },
-      { role: "user", content: history.join(", ") + (profile ? profile : "") },
+      {
+        role: "user",
+        content: JSON.stringify({
+          userName: userName,
+          history: history,
+          prev_profile: profile,
+        }),
+      },
     ],
   });
 

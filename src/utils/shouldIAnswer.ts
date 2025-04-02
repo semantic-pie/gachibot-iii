@@ -28,7 +28,7 @@ export const shouldIAnswer = async (content?: string): Promise<number> => {
 
   const response = completion.choices[0].message.content;
 
-  console.log("response: ", response);
+  console.log("answerValue: ", response);
 
   if (response) {
     try {
