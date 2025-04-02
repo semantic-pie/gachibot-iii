@@ -1,0 +1,63 @@
+name: Build and Deploy on Self-Hosted Runner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted  # Указываем, что используем свой runner
+    
+    steps:
+      # Чекаут кода
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Сборка Docker образа
+      - name: Build Docker image
+        id: docker_build
+        run: |
+          docker build -t myapp:latest -t myapp:${{ github.sha }} .
+
+      # Деплой на сервере
+      - name: Deploy container
+        id: deploy
+        run: |
+          # Получаем текущий работающий образ
+          CURRENT_IMAGE=$(docker ps -q --filter "name=myapp_container" | xargs -r docker inspect --format '{{.Config.Image}}' || echo "none")
+          echo "Current image: $CURRENT_IMAGE"
+
+          # Остановка и удаление старого контейнера
+          docker stop myapp_container || true
+          docker rm myapp_container || true
+          
+          # Запуск нового контейнера
+          docker run -d --name myapp_container \
+            --restart unless-stopped \
+            myapp:latest
+          
+          # Проверка здоровья
+          sleep 10
+          if ! curl -f http://localhost:8080/health; then
+            echo "Health check failed, rolling back..."
+            
+            # Остановка провалившегося контейнера
+            docker stop myapp_container || true
+            docker rm myapp_container || true
+            
+            # Откат к предыдущему образу, если он был
+            if [ "$CURRENT_IMAGE" != "none" ]; then
+              docker run -d --name myapp_container \
+                --restart unless-stopped \
+                -p 8080:8080 \
+                "$CURRENT_IMAGE"
+              echo "Rolled back to $CURRENT_IMAGE"
+              exit 1
+            else
+              echo "No previous image to rollback to"
+              exit 1
+            fi
+          fi
+          echo "Deployment successful"

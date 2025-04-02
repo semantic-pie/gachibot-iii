@@ -1,0 +1,8 @@
+services:
+  gachibot:
+    container_name: gachibot
+    image: gachibot:latest
+    build: .
+    restart: always
+    volumes:
+      - .:/app
