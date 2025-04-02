@@ -1,6 +1,7 @@
 import { ai } from "@src/ai/client.ts";
 import type { BotContext, KvUser } from "@src/context.ts";
 import { db } from "@src/db.ts";
+import { SYSTEM_PROMPTS } from "@src/prompts.ts";
 
 const getUserKey = (id: string | number) => {
   return ["users", String(id)];
@@ -44,9 +45,7 @@ const createProfile = async (history: string[], profile?: string) => {
     messages: [
       {
         role: "system",
-        content:
-          "Сделай краткую выжимку или характиристику пользователя по его последним сообщениям. Пострарайся кратко, так чтобы потом можно было на это ссылаться.",
-      },
+        content: SYSTEM_PROMPTS.CREATE_USER_PROFILE },
       { role: "user", content: history.join(", ") + (profile ? profile : "") },
     ],
   });
