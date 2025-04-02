@@ -1,1 +1,5 @@
-export const db = await Deno.openKv("./db")
+const dbPath = "./database/db";
+
+await Deno.mkdir("./database", { recursive: true });
+
+export const db = await Deno.openKv(dbPath);

@@ -4,7 +4,7 @@ import { middleware } from "@src/middleware.ts";
 import { generateAnswer } from "@src/utils/generateAnswer.ts";
 
 const bot = new Bot<BotContext>(
-  "7254098541:AAF0l0Lz50w4QpIzZOtfNZhy1mtL-0QrYOM",
+  Deno.env.get("BOT_TOKEN") || "",
 );
 
 bot.use(middleware);
