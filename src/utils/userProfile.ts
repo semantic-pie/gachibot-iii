@@ -1,4 +1,4 @@
-import type { BotContext, KvUser } from "@src/context.ts";
+import type { BotContext, HistoryItem, KvUser } from "@src/context.ts";
 import type { User } from "@grammy/types";
 import { ai } from "@src/ai/client.ts";
 import { db } from "@src/db.ts";
@@ -18,7 +18,18 @@ export const updateProfile = async (
   }
 
   if (ctx.msg.text) {
-    user.history.push(ctx.msg.text);
+    if (
+      ctx.msg.reply_to_message?.from?.id === ctx.me.id &&
+      ctx.msg.reply_to_message?.text
+    ) {
+      user.history.push({
+        role: "assistant",
+        name: 'Билли',
+        content: ctx.msg.reply_to_message.text,
+      });
+    }
+
+    user.history.push({ role: "user", content: ctx.msg.text, name: ctx.from?.first_name ?? '' });
   }
 
   if (user.history.length > 30) {
@@ -58,14 +69,22 @@ const createNewUser = async (user: User): Promise<KvUser> => {
   }
 };
 
-const createProfile = async (history: string[], profile?: string) => {
+const createProfile = async (history: HistoryItem[], profile?: string) => {
   const completion = await ai.chat.completions.create({
     model: "deepseek-chat",
     messages: [
       {
         role: "system",
-        content: SYSTEM_PROMPTS.CREATE_USER_PROFILE },
-      { role: "user", content: history.join(", ") + (profile ? profile : "") },
+        content: SYSTEM_PROMPTS.CREATE_USER_PROFILE,
+      },
+      {
+        role: "user",
+        content: `Профиль: ${profile}. История сообщений: ${
+          JSON.stringify(
+            history.map((item, i) => `${i}. ${item.name}: ${item.content}`),
+          )
+        }`,
+      },
     ],
   });
 
