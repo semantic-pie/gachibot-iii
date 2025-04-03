@@ -32,7 +32,7 @@ export const updateProfile = async (
     user.history.push({ role: "user", content: ctx.msg.text, name: ctx.from?.first_name ?? '' });
   }
 
-  if (user.history.length > 30) {
+  if (user.history.length > 10) {
     const newProfile = await createProfile(user.history, user.profile);
     if (newProfile) {
       user.history = [];
