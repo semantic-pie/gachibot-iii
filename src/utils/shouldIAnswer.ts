@@ -16,6 +16,10 @@ export const shouldIAnswer = (content?: string): number => {
 
 const billyTriggers = [
   "билли",
+  "гачи",
+  "гачимучи",
+  "гачи-мучи",
+  "эсс",
   "херингтон",
   "босс",
   "мускулы",
