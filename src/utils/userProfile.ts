@@ -21,7 +21,7 @@ export const updateProfile = async (
     user.history.push(ctx.msg.text);
   }
 
-  if (user.history.length > 30) {
+  if (user.history.length > 10) {
     const newProfile = await createProfile(user.history, user.profile);
     if (newProfile) {
       user.history = [];
