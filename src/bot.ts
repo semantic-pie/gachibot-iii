@@ -4,7 +4,7 @@ import { middleware } from "@src/middleware.ts";
 import { generateAnswer } from "@src/utils/generateAnswer.ts";
 
 const bot = new Bot<BotContext>(
-  "<Paste your tgbot key here>",
+  Deno.env.get("BOT_TOKEN") || "",
 );
 
 bot.use(middleware);

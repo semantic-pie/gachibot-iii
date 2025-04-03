@@ -8,7 +8,7 @@
     },
     "unstable": ["kv"],
     "tasks": {
-        "prod": "deno run -A ./main.ts",
-        "dev": "deno run -A --watch ./main.ts"
+        "prod": "deno run --env-file=.env.prod -A ./main.ts",
+        "dev": "deno run --env-file=.env.dev -A --watch ./main.ts"
     }
 }
