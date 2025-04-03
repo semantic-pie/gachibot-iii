@@ -1,7 +1,13 @@
 import { Context } from "@grammy";
 
+export type HistoryItem = {
+  role: 'user' | 'assistant'
+  name: string
+  content: string
+}
+
 export interface KvUser {
-  history: string[];
+  history: HistoryItem[];
   profile: string | undefined;
 }
 
