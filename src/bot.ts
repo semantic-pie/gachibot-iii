@@ -10,16 +10,26 @@ const bot = new Bot<BotContext>(
 bot.use(middleware);
 
 bot.on("message", async (ctx) => {
-
-  if (ctx.config.shouldBreakIn >= 3) {
+  if (ctx.config.shouldBreakIn >= 3 || ctx.config.isReplyMe) {
     ctx.replyWithChatAction("typing");
     const response = await generateAnswer(ctx.msg?.text, ctx.config.user);
-    response && ctx.reply(response);
-  }
 
-  // ctx.reply(
-  //   "Я не врываюсь. Просто тестовый ответ: " + JSON.stringify(ctx.config.user),
-  // );
+    if (!response) return;
+
+    try {
+      const command = JSON.parse(response);
+      ctx.reply("Command: " + JSON.stringify(command));
+    } catch {
+      ctx.reply(
+        response,
+        {
+          reply_parameters: { message_id: ctx.msg.message_id },
+        },
+      );
+    }
+  }
 });
+
+bot.on;
 
 export default bot;

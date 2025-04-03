@@ -7,12 +7,14 @@ import { isOldMessage } from "@src/utils/isOldMessage.ts";
 
 export const middleware: Middleware<BotContext> = async (ctx, next) => {
   const isExpired = isOldMessage(ctx)
+  const isReplyMe = ctx.msg?.reply_to_message?.from?.id === ctx.me.id
 
   ctx.config = {
     user: await updateProfile(ctx),
     isAdmin: isAdmin(ctx.from?.id),
+    isReplyMe,
     isOldMessage: isExpired,
-    shouldBreakIn: isExpired ? 0 : shouldIAnswer(ctx.msg?.text),
+    shouldBreakIn: isExpired || isReplyMe? 0 : shouldIAnswer(ctx.msg?.text),
   };
 
   console.log("message recived: ", ctx.msg?.text)
