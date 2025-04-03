@@ -9,6 +9,11 @@ const bot = new Bot<BotContext>(
 
 bot.use(middleware);
 
+bot.command("whoami", async (ctx) => {
+  ctx.reply(ctx.config.user?.profile ?? "Empty profile");
+  ctx.reply(ctx.config.user?.history.map(i => `[${i.role}] ${i.name}: ${i.content}`).join('\n') ?? "Empty history");
+});
+
 bot.on("message", async (ctx) => {
   if (ctx.config.shouldBreakIn >= 3 || ctx.config.isReplyMe) {
     ctx.replyWithChatAction("typing");
