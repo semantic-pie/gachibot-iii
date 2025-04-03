@@ -7,6 +7,7 @@ export interface KvUser {
 
 interface BotConfig {
   isAdmin: boolean;
+  isOldMessage: boolean;
   user?: KvUser;
   shouldBreakIn: number;
 }
