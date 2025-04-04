@@ -2,8 +2,8 @@ import { Bot } from "@grammy";
 import { BotContext } from "@src/context.ts";
 import { middleware } from "@src/middleware.ts";
 import { addMessagesToHistory } from "@src/utils/chatHistory.ts";
-import { generateAnswerAlt } from "@src/utils/generateAnswerAlt.ts";
 import { getStickerFromMessage } from "@src/utils/stickerExtractor.ts";
+import { generateAnswer } from "./utils/generateAnswer.ts";
 
 const bot = new Bot<BotContext>(Deno.env.get("BOT_TOKEN") || "");
 
@@ -34,7 +34,7 @@ bot.on("message", async (ctx) => {
   if (ctx.config.shouldBreakIn >= 3 || ctx.config.isReplyMe) {
     ctx.replyWithChatAction("typing");
     
-    const response = await generateAnswerAlt(
+    const response = await generateAnswer(
       ctx.msg?.chat.id
     );
 
@@ -46,7 +46,10 @@ bot.on("message", async (ctx) => {
     } catch {
       const { message, sticker } = getStickerFromMessage(response);
 
-      sticker && ctx.replyWithSticker(sticker);
+      try {
+        sticker && ctx.replyWithSticker(sticker);
+      }catch {}
+      
       ctx.reply(message, {
         reply_parameters: { message_id: ctx.msg.message_id },
       });

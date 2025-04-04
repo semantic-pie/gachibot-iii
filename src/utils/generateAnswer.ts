@@ -3,7 +3,7 @@ import { KvGroup, KvUser } from "@src/context.ts";
 import { db } from '@src/db.ts';
 import { SYSTEM_PROMPTS } from "@src/prompts.ts";
 
-export const generateAnswerAlt = async (
+export const generateAnswer = async (
   chat_id: number
 ): Promise<string | undefined> => {
 
@@ -19,10 +19,10 @@ export const generateAnswerAlt = async (
   );
 
   
-  const profiles = users
+  const profiles = Array.from(new Set(users
     .filter((user) => user.value !== null)
     .map((user) => user.value.profile)
-    .filter((profile) => profile !== undefined);
+    .filter((profile) => profile !== undefined)));
 
   
     const history = chat.history.slice(-10).map((item) => ({
