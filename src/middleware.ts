@@ -14,7 +14,7 @@ export const middleware: Middleware<BotContext> = async (ctx, next) => {
     isAdmin: isAdmin(ctx.from?.id),
     isReplyMe,
     isOldMessage: isExpired,
-    shouldBreakIn: isExpired || isReplyMe? 0 : shouldIAnswer(ctx.msg?.text),
+    shouldBreakIn: !isExpired && (isReplyMe || shouldIAnswer(ctx.msg?.text))
   };
 
   console.log("message recived: ", ctx.msg?.text)

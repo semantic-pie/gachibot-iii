@@ -21,7 +21,7 @@ interface BotConfig {
   isReplyMe: boolean;
   isOldMessage: boolean;
   user?: KvUser;
-  shouldBreakIn: number;
+  shouldBreakIn: boolean;
 }
 
 export type BotContext = Context & {

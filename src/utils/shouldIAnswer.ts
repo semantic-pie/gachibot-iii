@@ -1,5 +1,5 @@
-export const shouldIAnswer = (content?: string): number => {
-  if (!content) return 0;
+export const shouldIAnswer = (content?: string): boolean => {
+  if (!content) return false;
 
   const tokens = content
     .toLocaleLowerCase()
@@ -8,10 +8,10 @@ export const shouldIAnswer = (content?: string): number => {
 
   console.log("user input ass tokens: ", tokens);
   for (const token of tokens) {
-    if (billyTriggers.includes(token)) return 5;
+    if (billyTriggers.includes(token)) return true;
   }
 
-  return 0;
+  return false;
 };
 
 const billyTriggers = [
