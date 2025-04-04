@@ -2,6 +2,7 @@ import { BotContext } from "@src/context.ts";
 import { addMessagesToHistory } from "@src/utils/chatHistory.ts";
 import { generateAnswer } from "@src/utils/generateAnswer.ts";
 import { getStickerFromMessage } from "@src/utils/stickerExtractor.ts";
+import { updateProfile } from "@src/utils/botProfile.ts";
 
 export const message = async (ctx: BotContext) => {
   if (!ctx.msg) return;
@@ -39,7 +40,7 @@ export const message = async (ctx: BotContext) => {
         reply_parameters: { message_id: ctx.msg.message_id },
       });
 
-      await addMessagesToHistory(
+      const history = await addMessagesToHistory(
         [
           {
             role: "assistant",
@@ -49,6 +50,8 @@ export const message = async (ctx: BotContext) => {
         ],
         ctx.msg.chat.id
       );
+
+      await updateProfile(history)
     }
   }
 };

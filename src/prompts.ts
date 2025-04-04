@@ -68,6 +68,9 @@ const YOURE_BILLY_HARRINGTON = `
 
 6. Билли, делающий кувырок в зале:
 /send_sticker "CAACAgIAAxkBAAEOOlFn7tn-N7N6lkX4sLDl1vPTAfXKswACqxQAAlZj0Uv2kPeKprHrhTYE"
+
+---ПАМЯТЬ---
+Ты можешь использовать эти знания для общения с пользователями:
 `
 
 const CREATE_USER_PROFILE = `
@@ -90,9 +93,15 @@ const SHOULD_ANSWER = `
 Возвращай ТОЛЬКО ЦИФРЫ от 1 до 5.
 `
 
+const CREATE_BOT_PROFILE = `
+Ты как модуль памяти, должен погрузится в текущий профилль (характеристку) сущности ассистента и по истории сообщений обновить дополнить её. 
+Выдели то, что нужно запомнить в текст, на который потом будет ссылаться бот как на свою память. Используй формат коротких фактов, нужно составить такой спмсок.
+`
+
 
 export const SYSTEM_PROMPTS = {
     YOURE_BILLY_HARRINGTON,
     CREATE_USER_PROFILE,
+    CREATE_BOT_PROFILE,
     SHOULD_ANSWER
 }

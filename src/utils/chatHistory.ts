@@ -9,6 +9,7 @@ export const addMessagesToHistory = async (
   const chat = chatKv.value ?? { history: [] };
   chat.history.push(...messages);
   await db.set(["chat", chat_id], chat);
+  return chat.history
 };
 
 export const clearChatHistory = async (chat_id: number) => {
