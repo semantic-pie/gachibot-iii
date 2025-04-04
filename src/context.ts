@@ -3,12 +3,17 @@ import { Context } from "@grammy";
 export type HistoryItem = {
   role: 'user' | 'assistant'
   name: string
+  user_id?: number
   content: string
 }
 
 export interface KvUser {
-  history: HistoryItem[];
   profile: string | undefined;
+  history: HistoryItem[];
+}
+
+export interface KvGroup {
+  history: HistoryItem[];
 }
 
 interface BotConfig {
