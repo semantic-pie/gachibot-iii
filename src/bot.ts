@@ -49,10 +49,6 @@ bot.on("message", async (ctx) => {
       try {
         sticker && ctx.replyWithSticker(sticker);
       }catch {}
-<<<<<<< HEAD
-=======
-
->>>>>>> 57a56b2 (refactor: change user_id to userId)
       ctx.reply(message, {
         reply_parameters: { message_id: ctx.msg.message_id },
       });
