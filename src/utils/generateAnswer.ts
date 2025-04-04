@@ -13,9 +13,9 @@ export const generateAnswer = async (
   if (!chat) return;
   const users = await Promise.all(
     chat.history
-      .map((item) => item.user_id)
+      .map((item) => item.userId)
       .filter((user) => user !== undefined)
-      .map((user_id) => db.get<KvUser>(["user", user_id])) // массив промисов
+      .map((userId) => db.get<KvUser>(["user", userId]))
   );
 
   

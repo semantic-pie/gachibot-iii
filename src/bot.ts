@@ -23,7 +23,7 @@ bot.on("message", async (ctx) => {
     [
       {
         role: "user",
-        user_id: ctx.msg.from.id,
+        userId: ctx.msg.from.id,
         content: ctx.msg.text ?? "",
         name: ctx.from?.first_name + " " + (ctx.from?.last_name ?? ""),
       },
@@ -49,7 +49,7 @@ bot.on("message", async (ctx) => {
       try {
         sticker && ctx.replyWithSticker(sticker);
       }catch {}
-      
+
       ctx.reply(message, {
         reply_parameters: { message_id: ctx.msg.message_id },
       });

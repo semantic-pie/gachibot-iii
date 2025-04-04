@@ -3,7 +3,7 @@ import { Context } from "@grammy";
 export type HistoryItem = {
   role: 'user' | 'assistant'
   name: string
-  user_id?: number
+  userId?: number
   content: string
 }
 
