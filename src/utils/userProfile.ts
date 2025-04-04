@@ -1,6 +1,6 @@
-import type { BotContext, HistoryItem, KvUser } from "@src/context.ts";
 import type { User } from "@grammy/types";
 import { ai } from "@src/ai/client.ts";
+import type { BotContext, HistoryItem, KvUser } from "@src/context.ts";
 import { db } from "@src/db.ts";
 import { SYSTEM_PROMPTS } from "@src/prompts.ts";
 
@@ -18,17 +18,6 @@ export const updateProfile = async (
   }
 
   if (ctx.msg.text) {
-    if (
-      ctx.msg.reply_to_message?.from?.id === ctx.me.id &&
-      ctx.msg.reply_to_message?.text
-    ) {
-      user.history.push({
-        role: "assistant",
-        name: 'Билли',
-        content: ctx.msg.reply_to_message.text,
-      });
-    }
-
     user.history.push({ role: "user", content: ctx.msg.text, name: ctx.from?.first_name ?? '' });
   }
 
