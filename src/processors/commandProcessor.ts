@@ -1,4 +1,5 @@
 import { BotContext, CommandJson } from "@src/context.ts";
+import { commands } from "@src/commands/index.ts";
 
 export const extractCommand = (
   message: string,
@@ -8,24 +9,22 @@ export const extractCommand = (
 
   if (match) {
     const commandJson = JSON.parse(match[1].trim());
-    const cleanedMessage = message.replace(regex, "").trim();
+    const cleanedMessage = message.replace(regex, "").replace(/\n{2,}/g, '\n').trim();
     return { commandJson, message: cleanedMessage };
   } else {
     console.log("No command found, assume the position!");
-    return { commandJson: undefined, message };
+    return { commandJson: undefined, message: message.replace(/\n{3,}/g, '\n\n') };
   }
 };
 
-export const processCommand = async (command: CommandJson, ctx: BotContext) => {
-  switch (command.type) {
-    case "ban_user":
-      await ctx.reply("Executing command for banning user: " + command.content);
-      break;
-    case "ban_all_users":
-      await ctx.reply("Executing command for banning all users");
-      break;
-    default:
-      console.log("Unknown command type: " + command.type);
-      break;
+export const processCommand = async (extractedCommand: CommandJson, ctx: BotContext) => {
+  for (const command of commands) {
+    if (extractedCommand.name === command.name) {
+      if (command.args) {
+        return await command.callback(extractedCommand.args)
+      } else {
+        return await command.callback()
+      }
+    }
   }
 };

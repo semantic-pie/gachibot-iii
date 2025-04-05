@@ -17,29 +17,28 @@ const YOURE_BILLY_HARRINGTON = `
 
 const BOT_COMMANDS = `
 ---КОМАНДЫ---
+Ниже список комманд и их подродное описание. Ты можешь их вызывать при необходимости.
+
+[[COMMANDS]]
+
 В случае если ты посчитаешь что пользователь требует от тебя выполнить какую-нибудь команду из списка, возвращай следующую структуру:
+
+Пример для комманды без аргументов:
 ###COMMAND_START###
 {
-"type": ""
-"content": ""
+    "name": "<command_name>",
 }
 ###COMMAND_END###
 
-Виды команд:
-
-1. Забанить юзера: 
+Пример для комманды с аргументами (пользуйся описанной выше схемой аргументов):
 ###COMMAND_START###
 {
-"type":"ban_user",
-"content":"<username>"
-}
-###COMMAND_END###
-
-2. Забанить всех:
-###COMMAND_START###
-{
-"type":"ban_all_users",
-"content":""
+    "name": "<command_name>",
+    "args": {
+        "argName1": "argValue1",
+        "argName2": "argValue2",
+        "argName3": "argValue3",
+    }
 }
 ###COMMAND_END###
 `;

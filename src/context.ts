@@ -1,11 +1,11 @@
 import { Context } from "@grammy";
 
 export type HistoryItem = {
-  role: 'user' | 'assistant'
-  name: string
-  userId?: number
-  content: string
-}
+  role: "user" | "assistant";
+  name: string;
+  userId?: number;
+  content: string;
+};
 
 export interface KvUser {
   profile: string | undefined;
@@ -17,8 +17,8 @@ export interface KvGroup {
 }
 
 export interface CommandJson {
-  type: string;
-  content: string;
+  name: string;
+  args: { [key: string]: string };
 }
 
 interface BotConfig {

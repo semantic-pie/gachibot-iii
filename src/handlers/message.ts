@@ -26,7 +26,7 @@ export const message = async (ctx: BotContext) => {
   if (ctx.config.shouldBreakIn) {
     ctx.replyWithChatAction("typing");
 
-    const response = await generateAnswer(ctx.msg?.chat.id);
+    let response = await generateAnswer(ctx.msg?.chat.id, undefined);
 
     if (!response) return;
 
@@ -36,14 +36,30 @@ export const message = async (ctx: BotContext) => {
       message,
     );
 
-    if (clearedMessage) {
+    if (clearedMessage && !commandJson) {
       await ctx.reply(clearedMessage, {
         reply_parameters: { message_id: ctx.msg.message_id },
       });
     }
 
+    let commandOutput
+
     if (commandJson) {
-      await processCommand(commandJson, ctx);
+      commandOutput = await processCommand(commandJson, ctx);
+
+      if (commandOutput) {
+        response = await generateAnswer(ctx.msg?.chat.id, commandOutput, response);
+
+        await ctx.reply(extractCommand(getStickerFromMessage(response ?? 'Я упал...').message).message , {
+          reply_parameters: { message_id: ctx.msg.message_id },
+        });
+      } else {
+        await ctx.reply(extractCommand(message).message, {
+          reply_parameters: { message_id: ctx.msg.message_id },
+        });
+      }
+
+      
     }
     if (sticker) {
       await ctx.replyWithSticker(sticker).catch((e) =>
@@ -51,12 +67,13 @@ export const message = async (ctx: BotContext) => {
       );
     }
 
+    
     const history = await addMessagesToHistory(
       [
         {
           role: "assistant",
           name: "Билли",
-          content: response,
+          content: response ?? '',
         },
       ],
       ctx.msg.chat.id,
