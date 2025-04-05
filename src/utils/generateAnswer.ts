@@ -3,6 +3,7 @@ import { KvGroup, KvUser } from "@src/context.ts";
 import { db } from "@src/db.ts";
 import { SYSTEM_PROMPTS } from "@src/prompts.ts";
 import { clearChatHistory } from "@src/utils/chatHistory.ts";
+import { getProfile } from "@src/utils/botProfile.ts";
 
 export const generateAnswer = async (
   chat_id: number
@@ -35,13 +36,17 @@ export const generateAnswer = async (
   console.log("context: ", chat?.history?.slice(-10));
   console.log("profiles: ", profiles);
 
+  const memory = await getProfile()
+
+  console.log('memory: ', memory)
+
   try {
     const completion = await ai.chat.completions.create({
       model: "deepseek-chat",
       messages: [
         {
           role: "system",
-          content: SYSTEM_PROMPTS.YOURE_BILLY_HARRINGTON,
+          content: SYSTEM_PROMPTS.YOURE_BILLY_HARRINGTON + memory,
         },
         { role: "user", content: aboutMe(profiles) },
         {
