@@ -16,6 +16,11 @@ export interface KvGroup {
   history: HistoryItem[];
 }
 
+export interface CommandJson {
+  type: string;
+  content: string;
+}
+
 interface BotConfig {
   isAdmin: boolean;
   isReplyMe: boolean;

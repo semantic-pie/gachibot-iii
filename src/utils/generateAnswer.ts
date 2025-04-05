@@ -2,8 +2,8 @@ import { ai } from "@src/ai/client.ts";
 import { KvGroup, KvUser } from "@src/context.ts";
 import { db } from "@src/db.ts";
 import { SYSTEM_PROMPTS } from "@src/prompts.ts";
-import { clearChatHistory } from "@src/utils/chatHistory.ts";
 import { getProfile } from "@src/utils/botProfile.ts";
+import { clearChatHistory } from "@src/utils/chatHistory.ts";
 
 export const generateAnswer = async (
   chat_id: number
@@ -46,7 +46,7 @@ export const generateAnswer = async (
       messages: [
         {
           role: "system",
-          content: SYSTEM_PROMPTS.YOURE_BILLY_HARRINGTON + memory,
+          content: SYSTEM_PROMPTS.YOURE_BILLY_HARRINGTON + SYSTEM_PROMPTS.BOT_COMMANDS + SYSTEM_PROMPTS.BOT_STICKERS + SYSTEM_PROMPTS.MEMORY_PROMPT + memory,
         },
         { role: "user", content: aboutMe(profiles) },
         {

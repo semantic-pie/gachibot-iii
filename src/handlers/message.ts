@@ -1,8 +1,12 @@
 import { BotContext } from "@src/context.ts";
+import {
+  extractCommand,
+  processCommand,
+} from "@src/processors/commandProcessor.ts";
+import { updateProfile } from "@src/utils/botProfile.ts";
 import { addMessagesToHistory } from "@src/utils/chatHistory.ts";
 import { generateAnswer } from "@src/utils/generateAnswer.ts";
 import { getStickerFromMessage } from "@src/utils/stickerExtractor.ts";
-import { updateProfile } from "@src/utils/botProfile.ts";
 
 export const message = async (ctx: BotContext) => {
   if (!ctx.msg) return;
@@ -16,7 +20,7 @@ export const message = async (ctx: BotContext) => {
         name: ctx.from?.first_name + " " + (ctx.from?.last_name ?? ""),
       },
     ],
-    ctx.msg?.chat.id
+    ctx.msg?.chat.id,
   );
 
   if (ctx.config.shouldBreakIn) {
@@ -26,32 +30,38 @@ export const message = async (ctx: BotContext) => {
 
     if (!response) return;
 
-    try {
-      const command = JSON.parse(response);
-      ctx.reply("Command: " + JSON.stringify(command));
-    } catch {
-      const { message, sticker } = getStickerFromMessage(response);
+    const { message, sticker } = getStickerFromMessage(response);
 
-      if (sticker) {
-        await ctx.replyWithSticker(sticker).catch(e => console.log('Oh shit, here we gone againe: ', e));
-      }
+    const { commandJson, message: clearedMessage } = extractCommand(
+      message,
+    );
 
-      await ctx.reply(message, {
+    if (clearedMessage) {
+      await ctx.reply(clearedMessage, {
         reply_parameters: { message_id: ctx.msg.message_id },
       });
-
-      const history = await addMessagesToHistory(
-        [
-          {
-            role: "assistant",
-            name: "Билли",
-            content: response,
-          },
-        ],
-        ctx.msg.chat.id
-      );
-
-      await updateProfile(history)
     }
+
+    if (commandJson) {
+      await processCommand(commandJson, ctx);
+    }
+    if (sticker) {
+      await ctx.replyWithSticker(sticker).catch((e) =>
+        console.log("Oh shit, here we gone again: ", e)
+      );
+    }
+
+    const history = await addMessagesToHistory(
+      [
+        {
+          role: "assistant",
+          name: "Билли",
+          content: response,
+        },
+      ],
+      ctx.msg.chat.id,
+    );
+
+    await updateProfile(history);
   }
 };
