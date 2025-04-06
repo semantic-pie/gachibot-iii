@@ -23,10 +23,8 @@ export interface CommandJson {
 
 interface BotConfig {
   isAdmin: boolean;
-  isReplyMe: boolean;
-  isOldMessage: boolean;
   user?: KvUser;
-  shouldBreakIn: boolean;
+  botShouldReply: boolean;
 }
 
 export type BotContext = Context & {

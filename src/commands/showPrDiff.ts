@@ -1,37 +1,31 @@
-import { BotCommandWitArguments } from "@src/commands/index.ts";
-
-const GITHUB_TOKEN = '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'
+import { BotCommandWitArguments } from "@src/processors/commandProcessor.ts";
 
 export const showPrDiff: BotCommandWitArguments = {
   args: [{
     value: "url",
-    description: "URL ссылка на пулл реквест в формате https://api.github.com/repos/${repoOwner}/${repoName}/pulls/${prNumber} Вместо <repoOwner> <repoName> <prNumber> подставь нужные значения.",
+    description:
+      "Ссылка на pull request в формате: https://api.github.com/repos/<repoOwner>/<repoName>/pulls/<prNumber> Замени <repoOwner>, <repoName> и <prNumber> на реальные значения.",
   }],
   name: "show_pull_request_details",
-  description: `Когда тебя просят посмотреть пулл реквест на гитхабе и кидают ссылку. Это возможность посмотреть PULL REQUEST, если у тебя есть ссылка на него. Используй когда тебе это нужно. `,
+  description:
+    `Когда нужно посмотреть детали pull request'а на GitHub. Если тебе прислали ссылку — передай её в команду и получи полную информацию о PR `,
   callback: async (args) => {
-    console.log('EXECUTED START: ', args)
     if (args.url) {
       const response = await fetch(args.url, {
         headers: {
-            'Authorization': `Bearer ${GITHUB_TOKEN}`,
-            'Accept': 'application/vnd.github.v3.diff',
+          "Authorization": `Bearer ${Deno.env.get("GITHUB_TOKEN")}`,
+          "Accept": "application/vnd.github.v3.diff",
         },
       });
 
-      
-      console.log(response)
-
       if (response.ok) {
-        const keke = await response.text()
-
-        console.log('keke: ', keke)
-        return `Вот что у нас есть по пулл реквесту: ${keke} \n Сделай краткую выжимку.`
+        return `Вот что у нас есть по пулл реквесту: ${await response
+          .text()} \n Сделай краткую выжимку.`;
       }
 
-      return 'Не удалось получить подробности пуллреквеста. Скорее всего или протух токен или чёт упало. Вот подробности: '+ response
-
+      return "Не удалось получить подробности пуллреквеста. Скорее всего или протух токен или чёт упало. Вот подробности: " +
+        response;
     }
-    return 'Не удалось получить подробности пуллреквеста. Скорее всего или протух токен или чёт упало'
+    return "Не удалось получить подробности пуллреквеста. Скорее всего или протух токен или чёт упало";
   },
 };

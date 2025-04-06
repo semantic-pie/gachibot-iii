@@ -2,18 +2,15 @@ import { ai } from "@src/ai/client.ts";
 import { KvGroup, KvUser } from "@src/context.ts";
 import { db } from "@src/db.ts";
 import { SYSTEM_PROMPTS } from "@src/prompts.ts";
-import { getProfile } from "@src/utils/botProfile.ts";
+import { getProfile } from "@src/processors/utils/processBotProfileUpdate.ts";
 import { clearChatHistory } from "@src/utils/chatHistory.ts";
-import {
-  BotCommandWitArguments,
-  commands,
-  SimpleBotCommand,
-} from "@src/commands/index.ts";
+import { createCommandsPrompt } from "@src/utils/generateCommandsPrompt.ts";
+import { commands } from "@src/processors/commandProcessor.ts";
 
 export const generateAnswer = async (
   chat_id: number,
   commandOutput?: string,
-  lastResponse?: string
+  lastResponse?: string,
 ): Promise<string | undefined> => {
   const chatKv = await db.get<KvGroup>(["chat", chat_id]);
 
@@ -67,7 +64,7 @@ export const generateAnswer = async (
         ...(chat ? history : []),
         ...(commandOutput
           ? [
-            { role: "assistant", content: lastResponse},
+            { role: "assistant", content: lastResponse },
             { role: "user", content: commandOutput },
           ] as {
             role: "user";
@@ -92,30 +89,4 @@ export const generateAnswer = async (
 
 const aboutMe = (profiles?: string[]) => {
   return profiles ? `Вот профили пользователей в данном чате: ${profiles}` : "";
-};
-
-const createCommandsPrompt = (
-  commandsPrompt: string,
-  commands: (SimpleBotCommand | BotCommandWitArguments)[],
-) => {
-  return commandsPrompt.replace(
-    "[[COMMANDS]]",
-    `${
-      commands.map((command, i) =>
-        `\n${i + 1}. **${command.name}**. 
-Использовать когда: ${command.description}.\n${
-          command.args
-            ? "Если ты вызываешь эту команду, то ды ложен передать следущие аругменты: \n" +
-              command.args.map((arg, i) =>
-                ` ${
-                  i + 1
-                }. Название переменной: ${arg.value}. Описание её значения: ${arg.description}`
-              ).join("\n")
-            : ""
-        }`
-      ).join("\n")
-    }
-    \n
-    `,
-  );
 };

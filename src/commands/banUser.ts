@@ -1,16 +1,28 @@
-import { BotCommandWitArguments } from "@src/commands/index.ts";
+import { BotCommandWitArguments } from "@src/processors/commandProcessor.ts";
+
+const BAN_USER_UNIT = 20;
 
 export const banUserCommand: BotCommandWitArguments = {
   args: [{
     value: "name",
-    description: "Юзернейм пользователя в телеграмме. Начинается с @",
+    description: " Телеграм-юзернейм нарушителя (начинается с @).",
   }, {
     value: "level",
-    description: "Уровень серьёзности нарушения по шкале от 1 до 10."
+    description: "Степень серьёзности нарушения (целое число от 1 до 10).",
   }],
   name: "ban_user",
-  description: `Если нужно забанить пользователя`,
-  callback: async (args) => {
-    console.log(`Иммитирую выполнение бана для пользователя: ${args['name']}. Уровень говножуйства: ${args['level']}/10`)
+  description:
+    `Если необходимо заблокировать пользователя. Пользуйся этим осторожно.`,
+  callback: async (args, ctx) => {
+    if (!ctx?.msg?.date || !Number(args["level"])) return;
+    const now = Math.floor(Date.now() / 1000);
+
+    try {
+      await ctx.banAuthor({
+        until_date: now + BAN_USER_UNIT * Number(args["level"]),
+      });
+    } catch (err) {
+      console.log("err while ban user: ", err);
+    }
   },
 };

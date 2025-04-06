@@ -1,29 +1,44 @@
 import { BotContext, CommandJson } from "@src/context.ts";
-import { commands } from "@src/commands/index.ts";
+import { reflectionCommand } from "@src/commands/reflection.ts";
+import { banUserCommand } from "@src/commands/banUser.ts";
+import { showPrDiff } from "@src/commands/showPrDiff.ts";
 
-export const extractCommand = (
-  message: string,
-): { commandJson: CommandJson | undefined; message: string } => {
-  const regex = /###COMMAND_START###([\s\S]*?)###COMMAND_END###/;
-  const match = message.match(regex);
-
-  if (match) {
-    const commandJson = JSON.parse(match[1].trim());
-    const cleanedMessage = message.replace(regex, "").replace(/\n{2,}/g, '\n').trim();
-    return { commandJson, message: cleanedMessage };
-  } else {
-    console.log("No command found, assume the position!");
-    return { commandJson: undefined, message: message.replace(/\n{3,}/g, '\n\n') };
-  }
+export type BotCommandArgument = {
+  description: string;
+  value: string;
 };
 
-export const processCommand = async (extractedCommand: CommandJson, ctx: BotContext) => {
+export interface SimpleBotCommand {
+  name: string;
+  description: string;
+  args: undefined;
+  callback: (ctx: BotContext) => Promise<string | undefined | void>;
+}
+
+export interface BotCommandWitArguments {
+  name: string;
+  description: string;
+  args: BotCommandArgument[];
+  callback: (
+    args: { [key: string]: string },
+    ctx: BotContext,
+  ) => Promise<string | undefined | void>;
+}
+
+export const commands = [reflectionCommand, banUserCommand, showPrDiff];
+
+export const processCommand = async (
+  extractedCommand: CommandJson,
+  ctx: BotContext,
+) => {
+  // commands should be registered in commands/index file
   for (const command of commands) {
     if (extractedCommand.name === command.name) {
+      // if command require arguments
       if (command.args) {
-        return await command.callback(extractedCommand.args)
+        return await command.callback(extractedCommand.args, ctx);
       } else {
-        return await command.callback()
+        return await command.callback(ctx);
       }
     }
   }
