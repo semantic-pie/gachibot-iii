@@ -1,4 +1,4 @@
-export const shouldIAnswer = (content?: string): boolean => {
+export const checkIsBotShouldAnswer = (content?: string): boolean => {
   if (!content) return false;
 
   const tokens = content

@@ -1,10 +1,9 @@
 import type { User } from "@grammy/types";
-import { ai } from "@src/ai/client.ts";
-import type { BotContext, HistoryItem, KvUser } from "@src/context.ts";
+import type { BotContext, KvUser } from "@src/context.ts";
 import { db } from "@src/db.ts";
-import { SYSTEM_PROMPTS } from "@src/prompts.ts";
+import { createUserProfile } from "@src/ai/utils/createUserProfile.ts";
 
-export const updateProfile = async (
+export const updateUserProfile = async (
   ctx: BotContext,
 ): Promise<KvUser | undefined> => {
   if (!ctx.msg?.from?.id) return;
@@ -18,11 +17,15 @@ export const updateProfile = async (
   }
 
   if (ctx.msg.text) {
-    user.history.push({ role: "user", content: ctx.msg.text, name: ctx.from?.first_name ?? '' });
+    user.history.push({
+      role: "user",
+      content: ctx.msg.text,
+      name: ctx.from?.first_name ?? "",
+    });
   }
 
   if (user.history.length > 10) {
-    const newProfile = await createProfile(user.history, user.profile);
+    const newProfile = await createUserProfile(user.history, user.profile);
     if (newProfile) {
       user.history = [];
       user.profile = newProfile;
@@ -56,26 +59,4 @@ const createNewUser = async (user: User): Promise<KvUser> => {
   } else {
     throw Error("Error to create User.");
   }
-};
-
-const createProfile = async (history: HistoryItem[], profile?: string) => {
-  const completion = await ai.chat.completions.create({
-    model: "deepseek-chat",
-    messages: [
-      {
-        role: "system",
-        content: SYSTEM_PROMPTS.CREATE_USER_PROFILE,
-      },
-      {
-        role: "user",
-        content: `Профиль: ${profile}. История сообщений: ${
-          JSON.stringify(
-            history.map((item, i) => `${i}. ${item.name}: ${item.content}`),
-          )
-        }`,
-      },
-    ],
-  });
-
-  return completion.choices[0].message.content;
 };

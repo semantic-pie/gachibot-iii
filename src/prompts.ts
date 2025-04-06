@@ -17,29 +17,28 @@ const YOURE_BILLY_HARRINGTON = `
 
 const BOT_COMMANDS = `
 ---КОМАНДЫ---
+Ниже список комманд и их подродное описание. Ты можешь их вызывать при необходимости.
+
+[[COMMANDS]]
+
 В случае если ты посчитаешь что пользователь требует от тебя выполнить какую-нибудь команду из списка, возвращай следующую структуру:
+
+Пример для комманды без аргументов:
 ###COMMAND_START###
 {
-"type": ""
-"content": ""
+    "name": "<command_name>",
 }
 ###COMMAND_END###
 
-Виды команд:
-
-1. Забанить юзера: 
+Пример для комманды с аргументами (пользуйся описанной выше схемой аргументов):
 ###COMMAND_START###
 {
-"type":"ban_user",
-"content":"<username>"
-}
-###COMMAND_END###
-
-2. Забанить всех:
-###COMMAND_START###
-{
-"type":"ban_all_users",
-"content":""
+    "name": "<command_name>",
+    "args": {
+        "argName1": "argValue1",
+        "argName2": "argValue2",
+        "argName3": "argValue3",
+    }
 }
 ###COMMAND_END###
 `;
@@ -69,9 +68,9 @@ const BOT_STICKERS = `
 
 6. Билли, делающий кувырок в зале:
 /send_sticker "CAACAgIAAxkBAAEOOlFn7tn-N7N6lkX4sLDl1vPTAfXKswACqxQAAlZj0Uv2kPeKprHrhTYE"
-`
+`;
 const MEMORY_PROMPT = `---ПАМЯТЬ---
-Ты можешь использовать эти знания для общения с пользователями:`
+Ты можешь использовать эти знания для общения с пользователями:`;
 
 const CREATE_USER_PROFILE = `
 Создай краткую, но содержательную характеристику пользователя на основе его последних сообщений. Выдели интересные факты или черты, которые стоит запомнить.   
@@ -91,7 +90,7 @@ const SHOULD_ANSWER = `
 - Если это диалог между другими участниками, вмешиваться не нужно, пока тебя явно не позвали.  
 - Оценивай только на основе предоставленного текста.  
 Возвращай ТОЛЬКО ЦИФРЫ от 1 до 5.
-`
+`;
 
 const CREATE_BOT_PROFILE = `
 Ты — специальный агент по обработке памяти для чат-бота. 
@@ -121,15 +120,14 @@ const CREATE_BOT_PROFILE = `
     Приоритет фактам, не деталям диалогов
     Недавняя информация важнее старой
     Не описывай как именно ты сжал данные или что ты делал для этого. (не добавляй в конце эти строки с комментариями)
-`
-
+`;
 
 export const SYSTEM_PROMPTS = {
-    YOURE_BILLY_HARRINGTON,
-    CREATE_USER_PROFILE,
-    CREATE_BOT_PROFILE,
-    SHOULD_ANSWER,
-    MEMORY_PROMPT,
-    BOT_COMMANDS,
-    BOT_STICKERS
-}
+  YOURE_BILLY_HARRINGTON,
+  CREATE_USER_PROFILE,
+  CREATE_BOT_PROFILE,
+  SHOULD_ANSWER,
+  MEMORY_PROMPT,
+  BOT_COMMANDS,
+  BOT_STICKERS,
+};
