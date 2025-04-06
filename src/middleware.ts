@@ -1,23 +1,21 @@
-import { Middleware } from "@grammy";
 import type { BotContext } from "@src/context.ts";
-import { shouldIAnswer } from "@src/utils/shouldIAnswer.ts";
-import { isAdmin } from "@src/utils/userAdmin.ts";
-import { updateProfile } from "@src/utils/userProfile.ts";
-import { isOldMessage } from "@src/utils/isOldMessage.ts";
+
+import { Middleware } from "@grammy";
+import { checkIsBotShouldAnswer } from "@src/middleware/checkIsBotShouldAnswer.ts";
+import { checkUserIsAdmin } from "@src/middleware/checkUserIsAdmin.ts";
+import { updateUserProfile } from "@src/middleware/updateUserProfile.ts";
+import { checkMessageIsExpired } from "@src/middleware/checkMessageIsExpired.ts";
 
 export const middleware: Middleware<BotContext> = async (ctx, next) => {
-  const isExpired = isOldMessage(ctx)
-  const isReplyMe = ctx.msg?.reply_to_message?.from?.id === ctx.me.id
+  const isMessageExpired = checkMessageIsExpired(ctx);
+  const isBotReplayed = ctx.msg?.reply_to_message?.from?.id === ctx.me.id;
 
   ctx.config = {
-    user: await updateProfile(ctx),
-    isAdmin: isAdmin(ctx.from?.id),
-    isReplyMe,
-    isOldMessage: isExpired,
-    shouldBreakIn: !isExpired && (isReplyMe || shouldIAnswer(ctx.msg?.text))
+    user: await updateUserProfile(ctx),
+    isAdmin: checkUserIsAdmin(ctx.from?.id),
+    botShouldReply: !isMessageExpired &&
+      (isBotReplayed || checkIsBotShouldAnswer(ctx.msg?.text)),
   };
-
-  console.log("message recived: ", ctx.msg?.text)
 
   await next();
 };

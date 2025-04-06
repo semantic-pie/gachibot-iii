@@ -2,11 +2,15 @@ import { ai } from "@src/ai/client.ts";
 import { KvGroup, KvUser } from "@src/context.ts";
 import { db } from "@src/db.ts";
 import { SYSTEM_PROMPTS } from "@src/prompts.ts";
-import { getProfile } from "@src/utils/botProfile.ts";
+import { getProfile } from "@src/processors/utils/processBotProfileUpdate.ts";
 import { clearChatHistory } from "@src/utils/chatHistory.ts";
+import { createCommandsPrompt } from "@src/utils/generateCommandsPrompt.ts";
+import { commands } from "@src/processors/commandProcessor.ts";
 
 export const generateAnswer = async (
-  chat_id: number
+  chat_id: number,
+  commandOutput?: string,
+  lastResponse?: string,
 ): Promise<string | undefined> => {
   const chatKv = await db.get<KvGroup>(["chat", chat_id]);
 
@@ -16,7 +20,7 @@ export const generateAnswer = async (
     chat.history
       .map((item) => item.userId)
       .filter((user) => user !== undefined)
-      .map((userId) => db.get<KvUser>(["user", userId]))
+      .map((userId) => db.get<KvUser>(["user", userId])),
   );
 
   const profiles = Array.from(
@@ -24,8 +28,8 @@ export const generateAnswer = async (
       users
         .filter((user) => user.value !== null)
         .map((user) => user.value.profile)
-        .filter((profile) => profile !== undefined)
-    )
+        .filter((profile) => profile !== undefined),
+    ),
   );
 
   const history = chat.history.slice(-10).map((item) => ({
@@ -36,9 +40,9 @@ export const generateAnswer = async (
   console.log("context: ", chat?.history?.slice(-10));
   console.log("profiles: ", profiles);
 
-  const memory = await getProfile()
+  const memory = await getProfile();
 
-  console.log('memory: ', memory)
+  console.log("memory: ", memory);
 
   try {
     const completion = await ai.chat.completions.create({
@@ -46,7 +50,10 @@ export const generateAnswer = async (
       messages: [
         {
           role: "system",
-          content: SYSTEM_PROMPTS.YOURE_BILLY_HARRINGTON + SYSTEM_PROMPTS.BOT_COMMANDS + SYSTEM_PROMPTS.BOT_STICKERS + SYSTEM_PROMPTS.MEMORY_PROMPT + memory,
+          content: SYSTEM_PROMPTS.YOURE_BILLY_HARRINGTON +
+            createCommandsPrompt(SYSTEM_PROMPTS.BOT_COMMANDS, commands) +
+            SYSTEM_PROMPTS.BOT_STICKERS +
+            SYSTEM_PROMPTS.MEMORY_PROMPT + memory,
         },
         { role: "user", content: aboutMe(profiles) },
         {
@@ -55,6 +62,15 @@ export const generateAnswer = async (
             "Отлично! При необходимости, буду использовать эту информацию о пользователях!",
         },
         ...(chat ? history : []),
+        ...(commandOutput
+          ? [
+            { role: "assistant", content: lastResponse },
+            { role: "user", content: commandOutput },
+          ] as {
+            role: "user";
+            content: string;
+          }[]
+          : []),
       ],
     });
 
