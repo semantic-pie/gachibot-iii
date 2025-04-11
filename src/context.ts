@@ -25,8 +25,21 @@ interface BotConfig {
   isAdmin: boolean;
   user?: KvUser;
   botShouldReply: boolean;
+  botProfile: BotProfile
 }
 
 export type BotContext = Context & {
   config: BotConfig;
 };
+
+export interface BotSticker {
+  description: string;
+  id: string
+}
+
+export interface BotProfile {
+  name: string;
+  description: string;
+  stickers: BotSticker[];
+  triggers: string[];
+}

@@ -48,26 +48,11 @@ const BOT_STICKERS = `
 Ты можешь использовать стикеры, но делай это умеренно - только если они действительно уместны и дополняют сообщение.
 Избегай избыточного использования. Если стикер не подходит по смыслу или контексту - не добавляй его. Главное - чтобы сообщение было четким и релевантным.
 Формат сообщения на добавление стикера:
-/send_sticker <id стикера>
+###STICKER_START###
+<id стикера>
+###STICKER_END###
 
 Стикеры которые тебе доступны:
-1. Билли, который курит:
-/send_sticker "CAACAgIAAxkBAAEOOjJn7tCNqZcLTSF870TGBtjsH9WwiQACdRIAAoDuyUtAK4hiuD3n_DYE"
-
-2. Билли, который срывает майку:
-/send_sticker "CAACAgIAAxkBAAEOOjRn7tE96bxB1KMX63olWayqq5mp4gACAhgAAnLcwEt56Ty4vsWYDDYE"
-
-3. Билли, который пьет пиво и закуривает, отличный стикер чтоб подтвердить насколько твое мнение крутое:
-/send_sticker "CAACAgIAAxkBAAEOOkln7tlBNSNbb5ryMNwg6-DogR7rWAACzBQAAgrXyUsa7GgoHs1N_zYE"
-
-4. Билли, после жесткого гачи делает "whoop":
-/send_sticker "CAACAgIAAxkBAAEOOktn7tlRmOYmICU7UaxgWdIo5xAiegACSxMAAmBsyUv3mkal9AHxxDYE"
-
-5. Билли, подзывающий к себе:
-/send_sticker "CAACAgIAAxkBAAEOOk9n7tncpYeEo2-l_7VXhbgIJY33hwACDxEAAojF0Usu_WLHr8VjzjYE"
-
-6. Билли, делающий кувырок в зале:
-/send_sticker "CAACAgIAAxkBAAEOOlFn7tn-N7N6lkX4sLDl1vPTAfXKswACqxQAAlZj0Uv2kPeKprHrhTYE"
 `;
 const MEMORY_PROMPT = `---ПАМЯТЬ---
 Ты можешь использовать эти знания для общения с пользователями:`;
@@ -77,8 +62,7 @@ const CREATE_USER_PROFILE = `
 Профиль должен быть лаконичным (3-5 предложений), но информативным, чтобы бот мог использовать его для персонализации ответов. Также будет приложена история переписки, можешь исопльзовать её.  
 `;
 
-const SHOULD_ANSWER = `
-Твое имя Билли.  
+const SHOULD_ANSWER = ` 
 Ты должен проанализировать сообщение или сообщения в диалоге и определить, хочет ли собеседник, чтобы ты вмешался в разговор, по шкале от 1 до 5, где:  
 1 — нет явного обращения к тебе, разговор идет между другими людьми или не требует твоего участия (например, обсуждение темы без упоминания тебя),  
 2 — сообщение нейтральное, неясно, ждут ли от тебя ответа (например, общая фраза без указания адресата),  

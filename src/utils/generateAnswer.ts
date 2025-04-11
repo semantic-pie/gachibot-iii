@@ -1,13 +1,16 @@
 import { ai } from "@src/ai/client.ts";
-import { KvGroup, KvUser } from "@src/context.ts";
+import { BotProfile, KvGroup, KvUser } from "@src/context.ts";
 import { db } from "@src/db.ts";
-import { SYSTEM_PROMPTS } from "@src/prompts.ts";
-import { getProfile } from "@src/processors/utils/processBotProfileUpdate.ts";
-import { clearChatHistory } from "@src/utils/chatHistory.ts";
-import { createCommandsPrompt } from "@src/utils/generateCommandsPrompt.ts";
 import { commands } from "@src/processors/commandProcessor.ts";
+import { getProfile } from "@src/processors/utils/processBotProfileUpdate.ts";
+import { SYSTEM_PROMPTS } from "@src/prompts.ts";
+import { clearChatHistory } from "@src/utils/chatHistory.ts";
+import { extractCommand } from "@src/utils/extractCommand.ts";
+import { extractSticker } from "@src/utils/extractSticker.ts";
+import { createCommandsPrompt } from "@src/utils/generateCommandsPrompt.ts";
 
 export const generateAnswer = async (
+  botProfile: BotProfile,
   chat_id: number,
   commandOutput?: string,
   lastResponse?: string,
@@ -32,12 +35,19 @@ export const generateAnswer = async (
     ),
   );
 
-  const history = chat.history.slice(-10).map((item) => ({
-    ...item,
-    content: item.name + ": " + item.content,
-  }));
+  const history = chat.history.slice(-10).map((item) => {
+    return {
+      ...item,
+      content: item.name + ": " + extractSticker(extractCommand(item.content).message).message,
+      role: item.role === "user" 
+            ? item.role 
+            : (item.role === "assistant" && item.name !== botProfile.name) 
+                ? "user" 
+                : "assistant",
+    };
+  });
 
-  console.log("context: ", chat?.history?.slice(-10));
+  console.log("context: ", history);
   console.log("profiles: ", profiles);
 
   const memory = await getProfile();
@@ -50,9 +60,15 @@ export const generateAnswer = async (
       messages: [
         {
           role: "system",
-          content: SYSTEM_PROMPTS.YOURE_BILLY_HARRINGTON +
+          content: botProfile.description +
             createCommandsPrompt(SYSTEM_PROMPTS.BOT_COMMANDS, commands) +
             SYSTEM_PROMPTS.BOT_STICKERS +
+            botProfile.stickers.map((sticker, id) => `
+              ${id}. ${sticker.description}
+              ###STICKER_START###
+              ${sticker.id}
+              ###STICKER_END###
+              `) +
             SYSTEM_PROMPTS.MEMORY_PROMPT + memory,
         },
         { role: "user", content: aboutMe(profiles) },
