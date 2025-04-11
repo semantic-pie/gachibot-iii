@@ -1,6 +1,6 @@
 import { banUserCommand } from "@src/commands/banUser.ts";
 import { changeBotRoleCommand } from "@src/commands/changeRole.ts";
-import { fetchCurrencyRatesCommand } from "@src/commands/currency.ts";
+import { clearChatContext } from "@src/commands/clearContext.ts";
 import { reflectionCommand } from "@src/commands/reflection.ts";
 import { showPrDiff } from "@src/commands/showPrDiff.ts";
 import { BotContext, CommandJson } from "@src/context.ts";
@@ -27,7 +27,7 @@ export interface BotCommandWitArguments {
   ) => Promise<string | undefined | void>;
 }
 
-export const commands = [reflectionCommand, banUserCommand, showPrDiff, changeBotRoleCommand, fetchCurrencyRatesCommand];
+export const commands = [reflectionCommand, banUserCommand, showPrDiff, changeBotRoleCommand, clearChatContext];
 
 export const processCommand = async (
   extractedCommand: CommandJson,
