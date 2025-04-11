@@ -14,7 +14,7 @@ export const createCommandsPrompt = (
         `\n${i + 1}. "${command.name}": 
 Использовать когда: ${command.description}.\n${
           command.args
-            ? "Если ты вызываешь эту команду, то ды ложен передать следущие аругменты: \n" +
+            ? "Если ты вызываешь эту команду, то ты должен передать следущие аругменты: \n" +
               command.args.map((arg) =>
                 `  - Название переменной: ${arg.value}. Описание: ${arg.description}`
               ).join("\n")

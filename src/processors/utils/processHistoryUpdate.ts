@@ -1,5 +1,5 @@
-import { addMessagesToHistory } from "@src/utils/chatHistory.ts";
 import { BotContext } from "@src/context.ts";
+import { addMessagesToHistory } from "@src/utils/chatHistory.ts";
 
 export const processHistoryUpdate = async (
   ctx: BotContext,
@@ -7,7 +7,7 @@ export const processHistoryUpdate = async (
 ) => {
   if (!ctx?.msg || !ctx.msg.from || !ctx.msg.text) return;
 
-  const isBot = ctx.msg.from.id === ctx.me.id;
+  const isBot = botResponse ? true : false;
 
   const history = await addMessagesToHistory(
     [
@@ -16,8 +16,8 @@ export const processHistoryUpdate = async (
         content: botResponse ? botResponse : ctx.msg.text,
         userId: isBot ? undefined : ctx.msg.from.id,
         name: isBot
-          ? ctx.msg.from.first_name + " " + (ctx.msg.from.last_name ?? "")
-          : "Билли",
+          ? ctx.config.botProfile.name : 
+          ctx.msg.from.first_name + " " + (ctx.msg.from.last_name ?? ""),
       },
     ],
     ctx.msg.chat.id,

@@ -1,12 +1,17 @@
 import { Bot } from "@grammy";
 import { BotContext } from "@src/context.ts";
-import { middleware } from "@src/middleware.ts";
-import { handleMessage } from "@src/handlers/handleMessage.ts";
-import { userProfile } from "@src/handlers/userProfile.ts";
 import { botProfile } from "@src/handlers/botProfile.ts";
 import { botTools } from "@src/handlers/botTools.ts";
+import { handleMessage } from "@src/handlers/handleMessage.ts";
+import { userProfile } from "@src/handlers/userProfile.ts";
+import { middleware } from "@src/middleware.ts";
+import { BillyProfile, JarvisProfile } from "@src/profiles.ts";
+import { addProfile } from "@src/utils/botProfiles.ts";
 
 const bot = new Bot<BotContext>(Deno.env.get("BOT_TOKEN") || "");
+
+await addProfile(JarvisProfile);
+await addProfile(BillyProfile);
 
 bot.use(middleware);
 
