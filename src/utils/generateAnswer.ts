@@ -52,25 +52,27 @@ export const generateAnswer = async (
 
   const memory = await getProfile();
 
-  console.log("memory: ", memory);
 
   const botStickers = botProfile.stickers.length > 0 ? SYSTEM_PROMPTS.BOT_STICKERS +
   botProfile.stickers.map((sticker, id) => `
-    ${id}. ${sticker.description}
+    ${id + 1}. ${sticker.description}
     ###STICKER_START###
     ${sticker.id}
     ###STICKER_END###
-    `): "";
+    `).join(""): "";
+
+  const systemPrompt = botProfile.description +
+  createCommandsPrompt(SYSTEM_PROMPTS.BOT_COMMANDS, commands) 
+   + botStickers +
+  SYSTEM_PROMPTS.MEMORY_PROMPT + memory;
+
   try {
     const completion = await ai.chat.completions.create({
       model: "deepseek-chat",
       messages: [
         {
           role: "system",
-          content: botProfile.description +
-            createCommandsPrompt(SYSTEM_PROMPTS.BOT_COMMANDS, commands) +
-             + botStickers +
-            SYSTEM_PROMPTS.MEMORY_PROMPT + memory,
+          content: systemPrompt
         },
         { role: "user", content: aboutMe(profiles) },
         {
@@ -88,7 +90,7 @@ export const generateAnswer = async (
             content: string;
           }[]
           : []),
-      ],
+      ]
     });
 
     const response = completion.choices[0].message.content;
