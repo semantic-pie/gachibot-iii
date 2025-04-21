@@ -5,7 +5,7 @@ import { changeBotProfile } from "@src/utils/botProfiles.ts";
 export const changeBotRoleCommand: BotCommandWitArguments = {
   args: [{
     value: "name",
-    description: "Имя роли, роли бывают такие как: Jarvis, Billy",
+    description: "Имя роли, роли бывают такие как: Jarvis, Billy, Kodomi",
   }
 ],
   name: "change_role",

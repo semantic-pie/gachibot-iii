@@ -5,13 +5,14 @@ import { botTools } from "@src/handlers/botTools.ts";
 import { handleMessage } from "@src/handlers/handleMessage.ts";
 import { userProfile } from "@src/handlers/userProfile.ts";
 import { middleware } from "@src/middleware.ts";
-import { BillyProfile, JarvisProfile } from "@src/profiles.ts";
+import { BillyProfile, JarvisProfile, KodomiProfile } from "@src/profiles.ts";
 import { addProfile } from "@src/utils/botProfiles.ts";
 
 const bot = new Bot<BotContext>(Deno.env.get("BOT_TOKEN") || "");
 
 await addProfile(JarvisProfile);
 await addProfile(BillyProfile);
+await addProfile(KodomiProfile);
 
 bot.use(middleware);
 
