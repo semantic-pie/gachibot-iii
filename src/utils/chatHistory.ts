@@ -7,6 +7,7 @@ export const addMessagesToHistory = async (
 ) => {
   const chatKv = await db.get<KvGroup>(["chat", chat_id]);
   const chat = chatKv.value ?? { history: [] };
+  chat.history = chat.history.slice(-10);
   chat.history.push(...messages);
   await db.set(["chat", chat_id], chat);
   return chat.history;
