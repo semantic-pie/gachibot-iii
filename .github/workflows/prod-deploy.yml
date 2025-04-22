@@ -9,16 +9,16 @@ on:
 jobs:
   build-and-deploy:
     runs-on: self-hosted
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Export secrets to env
+      - name: Create .env.prod
         run: |
-          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> $GITHUB_ENV
-          echo "AI_TOKEN=${{ secrets.AI_TOKEN }}" >> $GITHUB_ENV
-          echo "GITHUB_TOKEN=${{ secrets.TOKEN_FOR_GIT }}" >> $GITHUB_ENV
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env.prod
+          echo "AI_TOKEN=${{ secrets.AI_TOKEN }}" >> .env.prod
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> .env.prod
 
       - name: Build Docker image
         id: docker_build
@@ -36,9 +36,7 @@ jobs:
           
           docker run -d --name gachibot_container \
             --restart unless-stopped \
-            -e BOT_TOKEN=$BOT_TOKEN \
-            -e AI_TOKEN=$AI_TOKEN \
-            -e GITHUB_TOKEN=$GITHUB_TOKEN \
+            -v $PWD/.env.prod:/app/.env.prod \
             gachibot:latest
-          
+
           echo "Deployment successful"
