@@ -8,35 +8,37 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted  # Указываем, что используем свой runner
+    runs-on: self-hosted
     
     steps:
-      # Чекаут кода
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Сборка Docker образа
+      - name: Export secrets to env
+        run: |
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> $GITHUB_ENV
+          echo "AI_TOKEN=${{ secrets.AI_TOKEN }}" >> $GITHUB_ENV
+          echo "GITHUB_TOKEN=${{ secrets.TOKEN_FOR_GIT }}" >> $GITHUB_ENV
+
       - name: Build Docker image
         id: docker_build
         run: |
-          docker build -t myapp:latest -t myapp:${{ github.sha }} .
+          docker build -t gachibot:latest -t gachibot:${{ github.sha }} .
 
-      # Деплой на сервере
       - name: Deploy container
         id: deploy
         run: |
-          # Получаем текущий работающий образ
-          CURRENT_IMAGE=$(docker ps -q --filter "name=myapp_container" | xargs -r docker inspect --format '{{.Config.Image}}' || echo "none")
+          CURRENT_IMAGE=$(docker ps -q --filter "name=gachibot_container" | xargs -r docker inspect --format '{{.Config.Image}}' || echo "none")
           echo "Current image: $CURRENT_IMAGE"
 
-          # Остановка и удаление старого контейнера
-          docker stop myapp_container || true
-          docker rm myapp_container || true
+          docker stop gachibot_container || true
+          docker rm gachibot_container || true
           
-          # Запуск нового контейнера
-          docker run -d --name myapp_container \
+          docker run -d --name gachibot_container \
             --restart unless-stopped \
-            myapp:latest
-          
+            -e BOT_TOKEN=$BOT_TOKEN \
+            -e AI_TOKEN=$AI_TOKEN \
+            -e GITHUB_TOKEN=$GITHUB_TOKEN \
+            gachibot:latest
           
           echo "Deployment successful"
